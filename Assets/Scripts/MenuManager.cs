@@ -13,13 +13,20 @@ public class MenuManager : MonoBehaviour
     public void OpenMenu(MenuBox menu)
     {
         if (menuStack.Count > 0)
-            menuStack.Peek().enabled = false;
+        {
+            menuStack.Peek().SetFocused(false);
+        }
         else
+        {
             OnMenuOpened?.Invoke();
+        }
 
         menu.gameObject.SetActive(true);
         menu.enabled = true;
-        menu.OnCancel.AddListener(() => CloseCurrentMenu());
+        menu.SetFocused(true);
+
+        menu.OnCancel.AddListener(() => CancelFocusedMenu());
+        menu.OnNavigateToParent.AddListener(() => FocusParent());
         menuStack.Push(menu);
     }
 
@@ -30,11 +37,13 @@ public class MenuManager : MonoBehaviour
 
         MenuBox current = menuStack.Pop();
         current.OnCancel.RemoveAllListeners();
+        current.OnNavigateToParent.RemoveAllListeners();
+        current.SetFocused(false);
         current.gameObject.SetActive(false);
 
         if (menuStack.Count > 0)
         {
-            menuStack.Peek().enabled = true;
+            menuStack.Peek().SetFocused(true);
         }
         else
         {
@@ -48,10 +57,46 @@ public class MenuManager : MonoBehaviour
         {
             MenuBox current = menuStack.Pop();
             current.OnCancel.RemoveAllListeners();
+            current.OnNavigateToParent.RemoveAllListeners();
+            current.SetFocused(false);
             current.gameObject.SetActive(false);
         }
 
         OnAllMenusClosed?.Invoke();
+    }
+
+    public void FocusParent()
+    {
+        if (menuStack.Count <= 1)
+            return;
+
+        menuStack.Peek().SetFocused(false);
+
+        MenuBox[] menus = menuStack.ToArray();
+        menus[1].SetFocused(true);
+    }
+
+    public void FocusChild()
+    {
+        if (menuStack.Count <= 1)
+            return;
+
+        MenuBox[] menus = menuStack.ToArray();
+        menus[1].SetFocused(false);
+
+        menuStack.Peek().SetFocused(true);
+    }
+
+    public void PauseCurrentMenu()
+    {
+        if (menuStack.Count > 0)
+            menuStack.Peek().SetFocused(false);
+    }
+
+    public void ResumeCurrentMenu()
+    {
+        if (menuStack.Count > 0)
+            menuStack.Peek().SetFocused(true);
     }
 
     public bool IsMenuOpen()
@@ -66,19 +111,31 @@ public class MenuManager : MonoBehaviour
         return null;
     }
 
-
-    public void PauseCurrentMenu()
+    public void CancelFocusedMenu()
     {
-        if (menuStack.Count > 0)
-            menuStack.Peek().enabled = false;
-    }
+        MenuBox focused = null;
+        MenuBox[] menus = menuStack.ToArray();
 
-    public void ResumeCurrentMenu()
-    {
-        if (menuStack.Count > 0)
-            menuStack.Peek().enabled = true;
+        foreach (MenuBox menu in menus)
+        {
+            if (menu.IsFocused())
+            {
+                focused = menu;
+                break;
+            }
+        }
+
+        if (focused == null)
+            return;
+
+        if (focused == menuStack.Peek())
+        {
+            CloseCurrentMenu();
+        }
+        else
+        {
+            CloseAllMenus();
+        }
     }
 
 }
-
-

@@ -17,11 +17,14 @@ public class MenuBox : MonoBehaviour
 
     [Header("Events")]
     public UnityEvent OnCancel;
+    public UnityEvent OnNavigateToParent;
+    public UnityEvent OnNavigateToChild;
 
     private int currentIndex = 0;
     private Vector2Int currentHeldDirection = Vector2Int.zero;
     private float repeatTimer = 0f;
     private bool isRepeating = false;
+    private bool isFocused = false;
 
     void OnEnable()
     {
@@ -43,6 +46,21 @@ public class MenuBox : MonoBehaviour
 
     void HandleDirectionPressed(Vector2Int direction)
     {
+        if (!isFocused)
+            return;
+
+        if (direction == Vector2Int.right && IsAtRightEdge())
+        {
+            OnNavigateToParent?.Invoke();
+            return;
+        }
+
+        if (direction == Vector2Int.left && IsAtLeftEdge())
+        {
+            OnNavigateToChild?.Invoke();
+            return;
+        }
+
         MoveCursor(direction);
         currentHeldDirection = direction;
         repeatTimer = 0f;
@@ -51,7 +69,16 @@ public class MenuBox : MonoBehaviour
 
     void HandleDirectionHeld(Vector2Int direction)
     {
+        if (!isFocused)
+            return;
+
         if (direction != currentHeldDirection)
+            return;
+
+        if (direction == Vector2Int.right && IsAtRightEdge())
+            return;
+
+        if (direction == Vector2Int.left && IsAtLeftEdge())
             return;
 
         repeatTimer += Time.deltaTime;
@@ -75,8 +102,21 @@ public class MenuBox : MonoBehaviour
         }
     }
 
+    bool IsAtLeftEdge()
+    {
+        return currentIndex % columns == 0;
+    }
+
+    bool IsAtRightEdge()
+    {
+        return currentIndex % columns == columns - 1;
+    }
+
     void MoveCursor(Vector2Int direction)
     {
+        if (options.Count == 0)
+            return;
+
         int currentColumn = currentIndex % columns;
         int currentRow = currentIndex / columns;
         int totalRows = Mathf.CeilToInt((float)options.Count / columns);
@@ -106,12 +146,31 @@ public class MenuBox : MonoBehaviour
 
     void HandleConfirm()
     {
+        if (!isFocused)
+            return;
+
+        if (options.Count == 0)
+            return;
+
         options[currentIndex].OnConfirm?.Invoke();
     }
 
     void HandleCancel()
     {
+        if (!isFocused)
+            return;
+
         OnCancel?.Invoke();
+    }
+
+    public void SetFocused(bool focused)
+    {
+        isFocused = focused;
+    }
+
+    public bool IsFocused()
+    {
+        return isFocused;
     }
 
     public int GetCurrentIndex()
