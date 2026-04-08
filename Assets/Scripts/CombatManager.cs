@@ -52,6 +52,7 @@ public class CombatManager : MonoBehaviour
 
         if (playerStats == actor)
         {
+            combatMenuBox.transform.parent.gameObject.SetActive(true);
             menuManager.OpenMenu(combatMenuBox);
         }
         else
@@ -60,9 +61,11 @@ public class CombatManager : MonoBehaviour
         }
     }
 
+
     public void PlayerSlash()
     {
         menuManager.CloseAllMenus();
+        combatMenuBox.transform.parent.gameObject.SetActive(false);
 
         int damage = DamageCalculator.CalculateSlashDamage(
             playerStats.attack,
@@ -85,6 +88,7 @@ public class CombatManager : MonoBehaviour
     public void PlayerShoot()
     {
         menuManager.CloseAllMenus();
+        combatMenuBox.transform.parent.gameObject.SetActive(false);
 
         if (!ammoManager.CanShoot())
         {
@@ -116,6 +120,7 @@ public class CombatManager : MonoBehaviour
     public void PlayerDefend()
     {
         menuManager.CloseAllMenus();
+        combatMenuBox.transform.parent.gameObject.SetActive(false);
 
         playerStats.isDefending = true;
 
@@ -131,6 +136,7 @@ public class CombatManager : MonoBehaviour
     public void PlayerReload()
     {
         menuManager.CloseAllMenus();
+        combatMenuBox.transform.parent.gameObject.SetActive(false);
 
         if (!ammoManager.CanReload())
         {
@@ -154,6 +160,8 @@ public class CombatManager : MonoBehaviour
     public void PlayerEscape()
     {
         menuManager.CloseAllMenus();
+        combatMenuBox.transform.parent.gameObject.SetActive(false);
+
         battleActive = false;
 
         List<string> lines = new List<string> { "Got away safely!" };
@@ -164,6 +172,7 @@ public class CombatManager : MonoBehaviour
 
     void ExecuteEnemyTurn()
     {
+
         playerStats.ResetDefend();
 
         int damage = DamageCalculator.CalculateSlashDamage(
