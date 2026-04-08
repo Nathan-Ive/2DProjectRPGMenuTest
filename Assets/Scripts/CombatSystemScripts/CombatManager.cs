@@ -29,6 +29,11 @@ public class CombatManager : MonoBehaviour
     private CombatStats currentActor;
     private bool battleActive = false;
 
+    public bool IsBattleActive()
+    {
+        return battleActive;
+    }
+
     public void StartBattle(CombatStats player, CombatStats enemy)
     {
         playerStats = player;
@@ -87,16 +92,19 @@ public class CombatManager : MonoBehaviour
 
     public void PlayerShoot()
     {
-        menuManager.CloseAllMenus();
-        combatMenuBox.transform.parent.gameObject.SetActive(false);
-
         if (!ammoManager.CanShoot())
         {
+            menuManager.CloseCurrentMenu();
+            attackSubMenuBox.transform.parent.gameObject.SetActive(false);
+
             List<string> noAmmoLines = new List<string> { "No ammo! You need to reload first." };
-            dialogueBox.OnDialogueEnded.AddListener(ReturnToPlayerMenu);
+            dialogueBox.OnDialogueEnded.AddListener(ResumeAfterMessage);
             dialogueBox.StartDialogue(noAmmoLines);
             return;
         }
+
+        menuManager.CloseAllMenus();
+        combatMenuBox.transform.parent.gameObject.SetActive(false);
 
         int shotDamage = ammoManager.Shoot();
         int damage = DamageCalculator.CalculateGunDamage(
@@ -109,13 +117,14 @@ public class CombatManager : MonoBehaviour
         enemyStats.TakeDamage(damage);
 
         List<string> lines = new List<string>
-        {
-            playerStats.characterName + " fires! " + damage + " damage! (" + ammoManager.GetCurrentAmmo() + "/" + ammoManager.GetMaxAmmo() + " ammo remaining)"
-        };
+    {
+        playerStats.characterName + " fires! " + damage + " damage! (" + ammoManager.GetCurrentAmmo() + "/" + ammoManager.GetMaxAmmo() + " ammo remaining)"
+    };
 
         dialogueBox.OnDialogueEnded.AddListener(AfterPlayerAction);
         dialogueBox.StartDialogue(lines);
     }
+
 
     public void PlayerDefend()
     {
@@ -135,23 +144,23 @@ public class CombatManager : MonoBehaviour
 
     public void PlayerReload()
     {
-        menuManager.CloseAllMenus();
-        combatMenuBox.transform.parent.gameObject.SetActive(false);
-
         if (!ammoManager.CanReload())
         {
             List<string> fullLines = new List<string> { "Already fully loaded!" };
-            dialogueBox.OnDialogueEnded.AddListener(ReturnToPlayerMenu);
+            dialogueBox.OnDialogueEnded.AddListener(ResumeAfterMessage);
             dialogueBox.StartDialogue(fullLines);
             return;
         }
 
+        menuManager.CloseAllMenus();
+        combatMenuBox.transform.parent.gameObject.SetActive(false);
+
         ammoManager.ReloadOne();
 
         List<string> lines = new List<string>
-        {
-            playerStats.characterName + " reloads. (" + ammoManager.GetCurrentAmmo() + "/" + ammoManager.GetMaxAmmo() + ")"
-        };
+    {
+        playerStats.characterName + " reloads. (" + ammoManager.GetCurrentAmmo() + "/" + ammoManager.GetMaxAmmo() + ")"
+    };
 
         dialogueBox.OnDialogueEnded.AddListener(AfterPlayerAction);
         dialogueBox.StartDialogue(lines);
@@ -276,5 +285,10 @@ public class CombatManager : MonoBehaviour
     {
         dialogueBox.OnDialogueEnded.RemoveListener(ReturnToOverworld);
         OnReturnToOverworld?.Invoke();
+    }
+
+    void ResumeAfterMessage()
+    {
+        dialogueBox.OnDialogueEnded.RemoveListener(ResumeAfterMessage);
     }
 }

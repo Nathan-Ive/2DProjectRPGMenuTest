@@ -7,6 +7,7 @@ public class MenuBox : MonoBehaviour
     [Header("Menu Options")]
     public List<MenuOption> options;
     public int columns = 1;
+    public bool allowCancel = true;
 
     [Header("Input")]
     public InputManager inputManager;
@@ -158,6 +159,9 @@ public class MenuBox : MonoBehaviour
     void HandleCancel()
     {
         if (!isFocused)
+            return;
+
+        if (!allowCancel)
             return;
 
         OnCancel?.Invoke();

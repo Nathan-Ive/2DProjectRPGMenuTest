@@ -9,6 +9,9 @@ public class MenuBoxUI : MonoBehaviour
     public TextMeshProUGUI cursorText;
     public List<TextMeshProUGUI> optionTexts;
 
+    [Header("Cursor Settings")]
+    public float cursorOffsetX = 80f;
+
     private int lastIndex = -1;
 
     void Start()
@@ -31,9 +34,9 @@ public class MenuBoxUI : MonoBehaviour
             lastIndex = currentIndex;
 
             cursorText.rectTransform.anchoredPosition = new Vector2(
-                optionTexts[currentIndex].rectTransform.anchoredPosition.x - 80f,
+                optionTexts[currentIndex].rectTransform.anchoredPosition.x - cursorOffsetX,
                 optionTexts[currentIndex].rectTransform.anchoredPosition.y
-);
+            );
         }
     }
 }

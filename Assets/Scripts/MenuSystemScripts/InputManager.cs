@@ -17,47 +17,43 @@ public class InputManager : MonoBehaviour
 
     void Update()
     {
-        // Direction - Pressed
-        if (Input.GetKeyDown(KeyCode.UpArrow))
-            OnDirectionPressed?.Invoke(Vector2Int.up);
-        if (Input.GetKeyDown(KeyCode.DownArrow))
-            OnDirectionPressed?.Invoke(Vector2Int.down);
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
-            OnDirectionPressed?.Invoke(Vector2Int.left);
-        if (Input.GetKeyDown(KeyCode.RightArrow))
-            OnDirectionPressed?.Invoke(Vector2Int.right);
+        // Modifiers first - these set flags before movement happens
+        if (Input.GetKey(KeyCode.LeftShift))
+            OnSneakHeld?.Invoke();
 
-        // Direction - Held
-        if (Input.GetKey(KeyCode.UpArrow) && !Input.GetKeyDown(KeyCode.UpArrow))
-            OnDirectionHeld?.Invoke(Vector2Int.up);
-        if (Input.GetKey(KeyCode.DownArrow) && !Input.GetKeyDown(KeyCode.DownArrow))
-            OnDirectionHeld?.Invoke(Vector2Int.down);
-        if (Input.GetKey(KeyCode.LeftArrow) && !Input.GetKeyDown(KeyCode.LeftArrow))
-            OnDirectionHeld?.Invoke(Vector2Int.left);
-        if (Input.GetKey(KeyCode.RightArrow) && !Input.GetKeyDown(KeyCode.RightArrow))
-            OnDirectionHeld?.Invoke(Vector2Int.right);
-
-        // Confirm - Z
-        if (Input.GetKeyDown(KeyCode.Z))
-            OnConfirmPressed?.Invoke();
-
-        // Cancel - X
         if (Input.GetKeyDown(KeyCode.X))
             OnCancelPressed?.Invoke();
         if (Input.GetKey(KeyCode.X) && !Input.GetKeyDown(KeyCode.X))
             OnCancelHeld?.Invoke();
 
-        // Escape
-        if (Input.GetKeyDown(KeyCode.Escape))
-            OnEscapePressed?.Invoke();
-
-        // Ready - R
         if (Input.GetKeyDown(KeyCode.R))
             OnReadyPressed?.Invoke();
 
-        // Sneak - Shift
-        if (Input.GetKey(KeyCode.LeftShift))
-            OnSneakHeld?.Invoke();
+        // Directions - after modifiers so speed flags are set
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+            OnDirectionPressed?.Invoke(Vector2Int.up);
+        else if (Input.GetKeyDown(KeyCode.DownArrow))
+            OnDirectionPressed?.Invoke(Vector2Int.down);
+        else if (Input.GetKeyDown(KeyCode.LeftArrow))
+            OnDirectionPressed?.Invoke(Vector2Int.left);
+        else if (Input.GetKeyDown(KeyCode.RightArrow))
+            OnDirectionPressed?.Invoke(Vector2Int.right);
+
+        if (Input.GetKey(KeyCode.UpArrow) && !Input.GetKeyDown(KeyCode.UpArrow))
+            OnDirectionHeld?.Invoke(Vector2Int.up);
+        else if (Input.GetKey(KeyCode.DownArrow) && !Input.GetKeyDown(KeyCode.DownArrow))
+            OnDirectionHeld?.Invoke(Vector2Int.down);
+        else if (Input.GetKey(KeyCode.LeftArrow) && !Input.GetKeyDown(KeyCode.LeftArrow))
+            OnDirectionHeld?.Invoke(Vector2Int.left);
+        else if (Input.GetKey(KeyCode.RightArrow) && !Input.GetKeyDown(KeyCode.RightArrow))
+            OnDirectionHeld?.Invoke(Vector2Int.right);
+
+        // Confirm and Escape - after directions
+        if (Input.GetKeyDown(KeyCode.Z))
+            OnConfirmPressed?.Invoke();
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+            OnEscapePressed?.Invoke();
     }
 }
 

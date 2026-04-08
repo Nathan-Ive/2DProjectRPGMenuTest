@@ -52,14 +52,18 @@ public class PlayerOverworldActions : MonoBehaviour
             return;
         }
 
+        Debug.Log("Confirm pressed. nearbyHidingSpot: " + nearbyHidingSpot + " isGunReady: " + isGunReady);
+
         if (nearbyHidingSpot != null && !isGunReady)
         {
+            Debug.Log("Trying to enter. isOccupied: " + nearbyHidingSpot.IsOccupied());
             EnterHidingSpot();
         }
     }
 
     void HandleCancel()
     {
+        
         if (isHiding)
         {
             LeaveHidingSpot();
@@ -119,6 +123,7 @@ public class PlayerOverworldActions : MonoBehaviour
             currentHidingSpot.Leave();
             isHiding = false;
             currentHidingSpot = null;
+            playerMovement.SetHiding(false);
             UnreadyGun();
             OnLeftHidingSpot?.Invoke();
         }
@@ -143,6 +148,7 @@ public class PlayerOverworldActions : MonoBehaviour
             currentHidingSpot.ForceExit();
             isHiding = false;
             currentHidingSpot = null;
+            playerMovement.SetHiding(false);
             UnreadyGun();
             OnLeftHidingSpot?.Invoke();
         }

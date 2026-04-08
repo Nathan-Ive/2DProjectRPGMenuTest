@@ -46,24 +46,32 @@ public class HidingSpot : MonoBehaviour
 
     public void ForceExit()
     {
-        if (!isOccupied || playerMovement == null)
+        if (!isOccupied)
             return;
 
         isOccupied = false;
-        playerMovement.SetHiding(false);
-        playerMovement = null;
+
+        if (playerMovement != null)
+        {
+            playerMovement.SetHiding(false);
+            playerMovement = null;
+        }
 
         OnPlayerLeft?.Invoke();
     }
 
     public void Leave()
     {
-        if (!isOccupied || playerMovement == null)
+        if (!isOccupied)
             return;
 
         isOccupied = false;
-        playerMovement.SetHiding(false);
-        playerMovement = null;
+
+        if (playerMovement != null)
+        {
+            playerMovement.SetHiding(false);
+            playerMovement = null;
+        }
 
         OnPlayerLeft?.Invoke();
     }
