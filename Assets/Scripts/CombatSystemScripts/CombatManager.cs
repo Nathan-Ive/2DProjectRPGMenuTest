@@ -26,6 +26,10 @@ public class CombatManager : MonoBehaviour
     public UnityEvent OnBattleLost;
     public UnityEvent OnReturnToOverworld;
 
+    [Header("CombatInfoUI")]
+    public CombatInfoUI combatInfoUI;
+
+
     private CombatStats currentActor;
     private bool battleActive = false;
 
@@ -48,6 +52,9 @@ public class CombatManager : MonoBehaviour
 
         OnBattleStarted?.Invoke();
         atbSystem.ResumeATB();
+
+        if (combatInfoUI != null)
+            combatInfoUI.InitializeCombatUI(playerStats, enemyStats);
     }
 
     void HandleTurnReady(CombatStats actor)

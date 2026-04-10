@@ -176,4 +176,12 @@ public class ATBSystem : MonoBehaviour
     {
         isPaused = true;
     }
+
+    public float GetPlayerGauge(CombatStats combatant)
+    {
+        if (gauges.ContainsKey(combatant))
+            return gauges[combatant];
+        return 0f;
+    }
 }
+
